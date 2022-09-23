@@ -5,8 +5,8 @@ import com.posada.santiago.betapostsandcomments.business.gateways.EventBus;
 import com.posada.santiago.betapostsandcomments.business.gateways.model.CommentViewModel;
 import com.posada.santiago.betapostsandcomments.business.gateways.model.PostViewModel;
 import com.posada.santiago.betapostsandcomments.business.generic.DomainUpdater;
-import com.posada.santiago.betapostsandcomments.domain.events.CommentAdded;
-import com.posada.santiago.betapostsandcomments.domain.events.PostCreated;
+import com.posada.santiago.betapostsandcomments.domain.post.events.CommentAdded;
+import com.posada.santiago.betapostsandcomments.domain.post.events.PostCreated;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ public class ViewUpdater extends DomainUpdater {
         this.bus = bus;
 
         listen((PostCreated event)->{
-            PostViewModel post = new PostViewModel(event.aggregateRootId(), event.getAuthor(), event.getTitle(), new ArrayList<>());
+            PostViewModel post = new PostViewModel(event.aggregateRootId(), event.getName(), event.getTitle(), new ArrayList<>());
             bus.publishGeneric(post, "routingKey.proxy.post.created");
             repository.saveNewPost(post).subscribe();
         });
