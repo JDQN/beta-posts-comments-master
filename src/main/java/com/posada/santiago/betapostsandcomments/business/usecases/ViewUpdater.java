@@ -9,10 +9,14 @@ import com.posada.santiago.betapostsandcomments.business.gateways.model.PostView
 import com.posada.santiago.betapostsandcomments.business.generic.DomainUpdater;
 import com.posada.santiago.betapostsandcomments.domain.participant.events.EventCasted;
 import com.posada.santiago.betapostsandcomments.domain.participant.events.ParticipantCreated;
+import com.posada.santiago.betapostsandcomments.domain.participant.values.Detail;
+import com.posada.santiago.betapostsandcomments.domain.participant.values.Element;
+import com.posada.santiago.betapostsandcomments.domain.participant.values.TypeOfEvent;
 import com.posada.santiago.betapostsandcomments.domain.post.events.CommentAdded;
 import com.posada.santiago.betapostsandcomments.domain.post.events.PostCreated;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 @Service
@@ -28,6 +32,15 @@ public class ViewUpdater extends DomainUpdater {
         listen((PostCreated event)->{
             PostViewModel post = new PostViewModel(event.aggregateRootId(), event.getName(), event.getTitle(), new ArrayList<>());
             bus.publishGeneric(post, "routingKey.proxy.post.created");
+            EventViewModel eventViewModel = new EventViewModel(
+                    String.valueOf(Math.random()),
+                    event.getParticipantId(),
+                    LocalDateTime.now().toString(),
+                    "Canal",
+                    "Creado",
+                    event.getTitle()
+            );
+            repository.addEventToParticipant(eventViewModel).subscribe();
             repository.saveNewPost(post).subscribe();
         });
         listen((ParticipantCreated event)->{
@@ -41,6 +54,15 @@ public class ViewUpdater extends DomainUpdater {
 
         listen((CommentAdded event)->{
             CommentViewModel comment = new CommentViewModel(event.getId(), event.aggregateRootId(), event.getAuthor(), event.getContent());
+            EventViewModel eventViewModel = new EventViewModel(
+                    String.valueOf(Math.random()),
+                    event.getParticipantId(),
+                    LocalDateTime.now().toString(),
+                    "Comentario",
+                    "Creado",
+                    event.getContent()
+            );
+            repository.addEventToParticipant(eventViewModel).subscribe();
             repository.addCommentToPost(comment).subscribe();
             bus.publishGeneric(comment, "routingKey.proxy.comment.added");
         });
