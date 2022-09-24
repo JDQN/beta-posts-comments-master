@@ -4,6 +4,8 @@ package com.posada.santiago.betapostsandcomments.application.adapters.repository
 import com.google.gson.Gson;
 import com.posada.santiago.betapostsandcomments.business.gateways.DomainViewRepository;
 import com.posada.santiago.betapostsandcomments.business.gateways.model.CommentViewModel;
+import com.posada.santiago.betapostsandcomments.business.gateways.model.EventViewModel;
+import com.posada.santiago.betapostsandcomments.business.gateways.model.ParticipantViewModel;
 import com.posada.santiago.betapostsandcomments.business.gateways.model.PostViewModel;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -43,6 +45,11 @@ public class MongoViewRepository implements DomainViewRepository {
     }
 
     @Override
+    public Mono<ParticipantViewModel> saveNewParticipant(ParticipantViewModel participant) {
+        return template.save(participant);
+    }
+
+    @Override
     public Mono<PostViewModel> addCommentToPost(CommentViewModel comment) {
         var query = new Query(Criteria.where("aggregateId").is(comment.getPostId()));
         Update update = new Update();
@@ -52,6 +59,19 @@ public class MongoViewRepository implements DomainViewRepository {
                     comments.add(comment);
                     update.set("comments", comments);
                     return template.findAndModify(query, update, PostViewModel.class);
+                });
+    }
+
+    @Override
+    public Mono<ParticipantViewModel> addEventToParticipant(EventViewModel eventViewModel) {
+        var query = new Query(Criteria.where("aggregateId").is(eventViewModel.getParticipantId()));
+        Update update = new Update();
+        return template.findOne(query, ParticipantViewModel.class)
+                .flatMap(participantViewModel -> {
+                    List<EventViewModel> events = participantViewModel.getEvents();
+                    events.add(eventViewModel);
+                    update.set("events", events);
+                    return template.findAndModify(query,update,ParticipantViewModel.class);
                 });
     }
 }

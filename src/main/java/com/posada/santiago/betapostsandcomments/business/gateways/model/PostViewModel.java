@@ -14,6 +14,7 @@ public class PostViewModel {
     private String aggregateId;
     private String author;
     private String title;
+    protected Boolean deleted;
     private List<CommentViewModel> comments;
 
     public PostViewModel() {
@@ -24,8 +25,7 @@ public class PostViewModel {
         this.aggregateId = aggregateId;
         this.author = author;
         this.title = title;
+        this.deleted = false;
         this.comments = comments;
     }
-
-
 }
