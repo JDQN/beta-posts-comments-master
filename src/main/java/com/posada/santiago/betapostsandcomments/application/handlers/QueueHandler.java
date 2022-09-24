@@ -5,10 +5,12 @@ import co.com.sofka.domain.generic.DomainEvent;
 import com.google.gson.Gson;
 import com.posada.santiago.betapostsandcomments.application.adapters.bus.Notification;
 import com.posada.santiago.betapostsandcomments.business.usecases.UpdateViewUseCase;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.function.Consumer;
 
+@Slf4j
 @Service
 public class QueueHandler implements Consumer<String> {
     private final Gson gson = new Gson();
@@ -25,6 +27,7 @@ public class QueueHandler implements Consumer<String> {
         try {
             DomainEvent event = (DomainEvent) gson.fromJson(notification.getBody(), Class.forName(type));
             useCase.accept(event);
+            log.info("Event accepted");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }

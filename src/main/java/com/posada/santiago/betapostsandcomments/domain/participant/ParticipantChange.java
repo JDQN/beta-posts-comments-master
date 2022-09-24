@@ -15,7 +15,7 @@ import com.posada.santiago.betapostsandcomments.domain.participant.values.Elemen
 import com.posada.santiago.betapostsandcomments.domain.participant.values.EventId;
 import com.posada.santiago.betapostsandcomments.domain.participant.values.MessageId;
 import com.posada.santiago.betapostsandcomments.domain.participant.values.Rol;
-import com.posada.santiago.betapostsandcomments.domain.participant.values.Type;
+import com.posada.santiago.betapostsandcomments.domain.participant.values.TypeOfEvent;
 
 
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ public class ParticipantChange extends EventChange {
                     EventId.of(event.getEventId()),
                     new DateOfEvent(event.getDate()),
                     new Element(event.getElement()),
-                    new Type(event.getType()),
+                    new TypeOfEvent(event.getTypeOfEvent()),
                     new Detail(event.getDetail()));
             participant.events.add(participantEvent);
         });
