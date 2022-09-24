@@ -9,6 +9,8 @@ import reactor.core.publisher.Mono;
 
 public interface DomainViewRepository {
     Mono<PostViewModel> findByAggregateId(String aggregateId);
+
+    Mono<ParticipantViewModel> findParticipantById(String aggregateId);
     Flux<PostViewModel> findAllPosts();
     Mono<PostViewModel> saveNewPost(PostViewModel post);
 

@@ -35,6 +35,12 @@ public class MongoViewRepository implements DomainViewRepository {
     }
 
     @Override
+    public Mono<ParticipantViewModel> findParticipantById(String aggregateId) {
+        var query = new Query(Criteria.where("aggregateId").is(aggregateId));
+        return template.findOne(query, ParticipantViewModel.class);
+    }
+
+    @Override
     public Flux<PostViewModel> findAllPosts() {
         return template.findAll(PostViewModel.class);
     }

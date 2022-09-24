@@ -1,8 +1,10 @@
 package com.posada.santiago.betapostsandcomments.application.handlers;
 
 
+import com.posada.santiago.betapostsandcomments.business.gateways.model.ParticipantViewModel;
 import com.posada.santiago.betapostsandcomments.business.gateways.model.PostViewModel;
 import com.posada.santiago.betapostsandcomments.business.usecases.BringAllPostsUseCase;
+import com.posada.santiago.betapostsandcomments.business.usecases.BringParticipantById;
 import com.posada.santiago.betapostsandcomments.business.usecases.BringPostById;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,7 +38,11 @@ public class QueryHandler {
     }
 
     @Bean
-    public RouterFunction<ServerResponse> bringParticipantById() {
-        return null;
+    public RouterFunction<ServerResponse> bringParticipantByIdHandler(BringParticipantById useCase) {
+        return route(GET("bring/participant/{id}"),
+                request ->  ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(BodyInserters.fromPublisher(useCase.apply(request.pathVariable("id")), ParticipantViewModel.class))
+                );
     }
 }
