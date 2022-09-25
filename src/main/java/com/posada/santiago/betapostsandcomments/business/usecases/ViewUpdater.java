@@ -14,6 +14,7 @@ import com.posada.santiago.betapostsandcomments.domain.participant.values.Elemen
 import com.posada.santiago.betapostsandcomments.domain.participant.values.TypeOfEvent;
 import com.posada.santiago.betapostsandcomments.domain.post.events.CommentAdded;
 import com.posada.santiago.betapostsandcomments.domain.post.events.PostCreated;
+import com.posada.santiago.betapostsandcomments.domain.post.events.PostDeleted;
 import com.posada.santiago.betapostsandcomments.domain.post.events.ReactionAdded;
 import org.springframework.stereotype.Service;
 
@@ -60,6 +61,12 @@ public class ViewUpdater extends DomainUpdater {
                     event.getPhotoUrl(),
                     event.getRol(), new ArrayList<>(),new ArrayList<>(),new ArrayList<>(),new ArrayList<>());
             repository.saveNewParticipant(participant).subscribe();
+        });
+
+        listen((PostDeleted event)->{
+            var postId = event.getPostId();
+            repository.deletePost(postId).subscribe();
+            bus.publishGeneric(postId,"routingKey.proxy.post.deleted");
         });
 
         listen((CommentAdded event)->{

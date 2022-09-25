@@ -52,6 +52,12 @@ public class MongoViewRepository implements DomainViewRepository {
     }
 
     @Override
+    public Mono<PostViewModel> deletePost(String postId) {
+        var query = new Query(Criteria.where("aggregateId").is(postId));
+        return template.findAndRemove(query,PostViewModel.class);
+    }
+
+    @Override
     public Mono<ParticipantViewModel> saveNewParticipant(ParticipantViewModel participant) {
         return template.save(participant);
     }
@@ -69,18 +75,18 @@ public class MongoViewRepository implements DomainViewRepository {
                 });
     }
 
-	@Override
-	public Mono<PostViewModel> addReactions(String reaction, String postId) {
-			var query = new Query(Criteria.where("aggregateId").is(postId));
-		Update update = new Update();
-		return template.findOne(query, PostViewModel.class)
-			 .flatMap( postViewModel -> {
-				 List<String> reactions = postViewModel.getReactions();
-				 reactions.add(reaction);
-				 update.set("reactions", reactions);
-				 return template.findAndModify(query, update, PostViewModel.class);
-			 });
-	}
+    @Override
+    public Mono<PostViewModel> addReactions(String reaction, String postId) {
+        var query = new Query(Criteria.where("aggregateId").is(postId));
+        Update update = new Update();
+        return template.findOne(query, PostViewModel.class)
+                .flatMap(postViewModel -> {
+                    List<String> reactions = postViewModel.getReactions();
+                    reactions.add(reaction);
+                    update.set("reactions", reactions);
+                    return template.findAndModify(query, update, PostViewModel.class);
+                });
+    }
 
     @Override
     public Mono<ParticipantViewModel> addEventToParticipant(EventViewModel eventViewModel) {
@@ -91,7 +97,7 @@ public class MongoViewRepository implements DomainViewRepository {
                     List<EventViewModel> events = participantViewModel.getEvents();
                     events.add(eventViewModel);
                     update.set("events", events);
-                    return template.findAndModify(query,update,ParticipantViewModel.class);
+                    return template.findAndModify(query, update, ParticipantViewModel.class);
                 });
     }
 

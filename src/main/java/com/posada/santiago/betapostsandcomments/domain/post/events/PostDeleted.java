@@ -1,7 +1,9 @@
 package com.posada.santiago.betapostsandcomments.domain.post.events;
 
 import co.com.sofka.domain.generic.DomainEvent;
+import lombok.Getter;
 
+@Getter
 public class PostDeleted extends DomainEvent {
 
     private String postId;
