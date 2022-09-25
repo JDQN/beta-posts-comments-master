@@ -5,6 +5,7 @@ import com.posada.santiago.betapostsandcomments.business.gateways.EventBus;
 import com.posada.santiago.betapostsandcomments.business.gateways.model.CommentViewModel;
 import com.posada.santiago.betapostsandcomments.business.gateways.model.EventViewModel;
 import com.posada.santiago.betapostsandcomments.business.gateways.model.ParticipantViewModel;
+import com.posada.santiago.betapostsandcomments.business.gateways.model.PostReactionDTO;
 import com.posada.santiago.betapostsandcomments.business.gateways.model.PostViewModel;
 import com.posada.santiago.betapostsandcomments.business.generic.DomainUpdater;
 import com.posada.santiago.betapostsandcomments.domain.participant.events.EventCasted;
@@ -102,7 +103,8 @@ public class ViewUpdater extends DomainUpdater {
         });
         listen((ReactionAdded event) -> {
             repository.addReactions(event.getReaction(), event.aggregateRootId()).subscribe();
-            //Add post publisher
+            var postReaction = new PostReactionDTO(event.aggregateRootId(), event.getReaction());
+            bus.publishGeneric(postReaction, "routingKey.proxy.post.reaction.added");
         });
     }
 }
