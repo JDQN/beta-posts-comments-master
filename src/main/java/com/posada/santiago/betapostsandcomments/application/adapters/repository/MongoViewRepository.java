@@ -20,6 +20,7 @@ import java.util.List;
 
 @Repository
 public class MongoViewRepository implements DomainViewRepository {
+
     private final ReactiveMongoTemplate template;
 
     private final Gson gson = new Gson();
@@ -68,6 +69,19 @@ public class MongoViewRepository implements DomainViewRepository {
                 });
     }
 
+	@Override
+	public Mono<PostViewModel> addReactions(String reaction, String postId) {
+			var query = new Query(Criteria.where("aggregateId").is(postId));
+		Update update = new Update();
+		return template.findOne(query, PostViewModel.class)
+			 .flatMap( postViewModel -> {
+				 List<String> reactions = postViewModel.getReactions();
+				 reactions.add(reaction);
+				 update.set("reactions", reactions);
+				 return template.findAndModify(query, update, PostViewModel.class);
+			 });
+	}
+
     @Override
     public Mono<ParticipantViewModel> addEventToParticipant(EventViewModel eventViewModel) {
         var query = new Query(Criteria.where("aggregateId").is(eventViewModel.getParticipantId()));
@@ -80,4 +94,5 @@ public class MongoViewRepository implements DomainViewRepository {
                     return template.findAndModify(query,update,ParticipantViewModel.class);
                 });
     }
+
 }
