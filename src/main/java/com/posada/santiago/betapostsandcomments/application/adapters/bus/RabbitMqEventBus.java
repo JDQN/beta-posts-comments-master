@@ -24,13 +24,20 @@ public class RabbitMqEventBus implements EventBus {
                 event.getClass().getTypeName(),
                 gson.toJson(event)
         );
+
         if(notification.getType().contains("PostCreated")){
             rabbitTemplate.convertAndSend(
 							RabbitMqConfig.EXCHANGE, RabbitMqConfig.PROXY_ROUTING_KEY_POST_CREATED, notification.serialize().getBytes()
             );
-        }else{
+        }
+        if(notification.getType().contains("CommentAdded")){
             rabbitTemplate.convertAndSend(
-							RabbitMqConfig.EXCHANGE, RabbitMqConfig.PROXY_ROUTING_KEY_COMMENT_ADDED, notification.serialize().getBytes()
+                    RabbitMqConfig.EXCHANGE, RabbitMqConfig.PROXY_ROUTING_KEY_COMMENT_ADDED, notification.serialize().getBytes()
+            );
+        }
+        if(notification.getType().contains("PostDeleted")){
+            rabbitTemplate.convertAndSend(
+                    RabbitMqConfig.EXCHANGE, RabbitMqConfig.PROXY_ROUTING_KEY_POST_DELETED, notification.serialize().getBytes()
             );
         }
 

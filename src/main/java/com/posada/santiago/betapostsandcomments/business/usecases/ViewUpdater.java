@@ -14,6 +14,7 @@ import com.posada.santiago.betapostsandcomments.domain.participant.values.Elemen
 import com.posada.santiago.betapostsandcomments.domain.participant.values.TypeOfEvent;
 import com.posada.santiago.betapostsandcomments.domain.post.events.CommentAdded;
 import com.posada.santiago.betapostsandcomments.domain.post.events.PostCreated;
+import com.posada.santiago.betapostsandcomments.domain.post.events.PostDeleted;
 import com.posada.santiago.betapostsandcomments.domain.post.events.ReactionAdded;
 import org.springframework.stereotype.Service;
 
@@ -26,21 +27,21 @@ public class ViewUpdater extends DomainUpdater {
     private final DomainViewRepository repository;
     private final EventBus bus;
 
-    public ViewUpdater(DomainViewRepository repository, EventBus bus){
+    public ViewUpdater(DomainViewRepository repository, EventBus bus) {
         this.repository = repository;
         this.bus = bus;
 
-        listen((PostCreated event)->{
+        listen((PostCreated event) -> {
             PostViewModel post = new PostViewModel(
-							 event.aggregateRootId(),
-							 event.getName(),
-							 event.getTitle(),
-							event.getPhotoUrl(),
-							"0",
-							event.getParticipantId(),
-								false,
-							new ArrayList<>(), new ArrayList<>()
-						);
+                    event.aggregateRootId(),
+                    event.getName(),
+                    event.getTitle(),
+                    event.getPhotoUrl(),
+                    "0",
+                    event.getParticipantId(),
+                    false,
+                    new ArrayList<>(), new ArrayList<>()
+            );
             bus.publishGeneric(post, "routingKey.proxy.post.created");
             EventViewModel eventViewModel = new EventViewModel(
                     String.valueOf(Math.random()),
@@ -53,17 +54,28 @@ public class ViewUpdater extends DomainUpdater {
             repository.addEventToParticipant(eventViewModel).subscribe();
             repository.saveNewPost(post).subscribe();
         });
-        listen((ParticipantCreated event)->{
+        listen((ParticipantCreated event) -> {
             ParticipantViewModel participant = new ParticipantViewModel(
                     event.aggregateRootId(),
                     event.getName(),
                     event.getPhotoUrl(),
-                    event.getRol(), new ArrayList<>(),new ArrayList<>(),new ArrayList<>(),new ArrayList<>());
+                    event.getRol(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
             repository.saveNewParticipant(participant).subscribe();
         });
 
-        listen((CommentAdded event)->{
-            CommentViewModel comment = new CommentViewModel(event.getId(), event.aggregateRootId(), event.getAuthor(), event.getContent());
+        listen((PostDeleted event) -> {
+            var postId = event.getPostId();
+            repository.deletePost(postId).subscribe();
+            bus.publishGeneric(postId, "routingKey.proxy.post.deleted");
+        });
+
+        listen((CommentAdded event) -> {
+            CommentViewModel comment = new CommentViewModel(
+                    event.getId(),
+                    event.aggregateRootId(),
+                    event.getAuthor(),
+                    event.getContent(),
+                    event.getParticipantId());
             EventViewModel eventViewModel = new EventViewModel(
                     String.valueOf(Math.random()),
                     event.getParticipantId(),
@@ -76,7 +88,7 @@ public class ViewUpdater extends DomainUpdater {
             repository.addCommentToPost(comment).subscribe();
             bus.publishGeneric(comment, "routingKey.proxy.comment.added");
         });
-        listen((EventCasted event)->{
+        listen((EventCasted event) -> {
             EventViewModel eventViewModel = new EventViewModel(
                     event.getEventId(),
                     event.aggregateRootId(),
@@ -88,9 +100,9 @@ public class ViewUpdater extends DomainUpdater {
             repository.addEventToParticipant(eventViewModel).subscribe();
             //Add bus publisher just if this need a websocket
         });
-				listen((ReactionAdded event) -> {
-					repository.addReactions(event.getReaction(), event.aggregateRootId()).subscribe();
-					//Add post publisher
-				});
+        listen((ReactionAdded event) -> {
+            repository.addReactions(event.getReaction(), event.aggregateRootId()).subscribe();
+            //Add post publisher
+        });
     }
 }

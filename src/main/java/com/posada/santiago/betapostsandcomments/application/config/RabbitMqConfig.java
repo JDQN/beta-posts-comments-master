@@ -17,10 +17,15 @@ public class RabbitMqConfig {
 
     public static final String PROXY_QUEUE_POST_CREATED = "events.proxy.post.created";
     public static final String PROXY_QUEUE_COMMENT_ADDED = "events.proxy.comment.added";
+
+    public static final String PROXY_QUEUE_POST_DELETED = "events.proxy.post.deleted";
+
     public static final String GENERAL_QUEUE = "events.general";
 
     public static final String PROXY_ROUTING_KEY_POST_CREATED = "routingKey.proxy.post.created";
     public static final String PROXY_ROUTING_KEY_COMMENT_ADDED = "routingKey.proxy.comment.added";
+    public static final String PROXY_ROUTING_KEY_POST_DELETED = "routingKey.proxy.post.deleted";
+
 
     @Autowired
     private QueueHandler handler;
@@ -34,6 +39,9 @@ public class RabbitMqConfig {
     public Queue commentAddedQueue(){
         return new Queue(PROXY_QUEUE_COMMENT_ADDED);
     }
+
+    @Bean
+    public Queue postDeletedQueue(){ return new Queue(PROXY_QUEUE_POST_DELETED);}
 
 
     @Bean
@@ -49,6 +57,11 @@ public class RabbitMqConfig {
     @Bean
     public Binding BindingToCommentAdded() {
         return BindingBuilder.bind(commentAddedQueue()).to(getTopicExchange()).with(PROXY_ROUTING_KEY_COMMENT_ADDED);
+    }
+
+    @Bean
+    public Binding BindingToPostDeletedQueue(){
+        return BindingBuilder.bind(postDeletedQueue()).to(getTopicExchange()).with(PROXY_ROUTING_KEY_POST_DELETED);
     }
 
     @RabbitListener(queues = GENERAL_QUEUE)

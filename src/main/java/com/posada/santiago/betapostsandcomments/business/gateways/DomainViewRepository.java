@@ -11,13 +11,18 @@ public interface DomainViewRepository {
     Mono<PostViewModel> findByAggregateId(String aggregateId);
 
     Mono<ParticipantViewModel> findParticipantById(String aggregateId);
+
     Flux<PostViewModel> findAllPosts();
+
     Mono<PostViewModel> saveNewPost(PostViewModel post);
 
+    Mono<PostViewModel> deletePost(String postId);
+
     Mono<ParticipantViewModel> saveNewParticipant(ParticipantViewModel participant);
+
     Mono<PostViewModel> addCommentToPost(CommentViewModel comment);
 
     Mono<ParticipantViewModel> addEventToParticipant(EventViewModel eventViewModel);
 
-		Mono<PostViewModel> addReactions(String reaction, String postId);
+    Mono<PostViewModel> addReactions(String reaction, String postId);
 }
