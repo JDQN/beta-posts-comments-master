@@ -5,7 +5,6 @@ import co.com.sofka.domain.generic.DomainEvent;
 import com.google.gson.Gson;
 import com.posada.santiago.betapostsandcomments.application.config.RabbitMqConfig;
 import com.posada.santiago.betapostsandcomments.business.gateways.EventBus;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +37,11 @@ public class RabbitMqEventBus implements EventBus {
         if(notification.getType().contains("PostDeleted")){
             rabbitTemplate.convertAndSend(
                     RabbitMqConfig.EXCHANGE, RabbitMqConfig.PROXY_ROUTING_KEY_POST_DELETED, notification.serialize().getBytes()
+            );
+        }
+        if(notification.getType().contains("ReactionAdded")){
+            rabbitTemplate.convertAndSend(
+                    RabbitMqConfig.EXCHANGE, RabbitMqConfig.PROXY_ROUTING_KEY_POST_REACTION_ADDED, notification.serialize().getBytes()
             );
         }
 
