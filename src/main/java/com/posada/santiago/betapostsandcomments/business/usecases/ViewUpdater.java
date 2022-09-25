@@ -14,6 +14,7 @@ import com.posada.santiago.betapostsandcomments.domain.participant.values.Elemen
 import com.posada.santiago.betapostsandcomments.domain.participant.values.TypeOfEvent;
 import com.posada.santiago.betapostsandcomments.domain.post.events.CommentAdded;
 import com.posada.santiago.betapostsandcomments.domain.post.events.PostCreated;
+import com.posada.santiago.betapostsandcomments.domain.post.events.ReactionAdded;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -30,7 +31,16 @@ public class ViewUpdater extends DomainUpdater {
         this.bus = bus;
 
         listen((PostCreated event)->{
-            PostViewModel post = new PostViewModel(event.aggregateRootId(), event.getName(), event.getTitle(), new ArrayList<>());
+            PostViewModel post = new PostViewModel(
+							 event.aggregateRootId(),
+							 event.getName(),
+							 event.getTitle(),
+							event.getPhotoUrl(),
+							"0",
+							event.getParticipantId(),
+								false,
+							new ArrayList<>(), new ArrayList<>()
+						);
             bus.publishGeneric(post, "routingKey.proxy.post.created");
             EventViewModel eventViewModel = new EventViewModel(
                     String.valueOf(Math.random()),
@@ -78,5 +88,9 @@ public class ViewUpdater extends DomainUpdater {
             repository.addEventToParticipant(eventViewModel).subscribe();
             //Add bus publisher just if this need a websocket
         });
+				listen((ReactionAdded event) -> {
+					repository.addReactions(event.getReaction(), event.aggregateRootId()).subscribe();
+					//Add post publisher
+				});
     }
 }

@@ -13,6 +13,7 @@ import java.util.function.Consumer;
 @Slf4j
 @Service
 public class QueueHandler implements Consumer<String> {
+
     private final Gson gson = new Gson();
     private final UpdateViewUseCase useCase;
 
