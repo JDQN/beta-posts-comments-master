@@ -27,6 +27,9 @@ public interface DomainViewRepository {
 
     Mono<ParticipantViewModel> addMessageToParticipant(MessageViewModel message);
 
+    Mono<ParticipantViewModel> AddFavorite(String postId, String participantId);
+
+
     Mono<ParticipantViewModel> addEventToParticipant(EventViewModel eventViewModel);
 
     Mono<PostViewModel> addReactions(String reaction, String postId);
