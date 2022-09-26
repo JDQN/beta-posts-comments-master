@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.posada.santiago.betapostsandcomments.business.gateways.DomainViewRepository;
 import com.posada.santiago.betapostsandcomments.business.gateways.model.CommentViewModel;
 import com.posada.santiago.betapostsandcomments.business.gateways.model.EventViewModel;
+import com.posada.santiago.betapostsandcomments.business.gateways.model.MessageViewModel;
 import com.posada.santiago.betapostsandcomments.business.gateways.model.ParticipantViewModel;
 import com.posada.santiago.betapostsandcomments.business.gateways.model.PostViewModel;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
@@ -77,6 +78,19 @@ public class MongoViewRepository implements DomainViewRepository {
                     comments.add(comment);
                     update.set("comments", comments);
                     return template.findAndModify(query, update, PostViewModel.class);
+                });
+    }
+
+    @Override
+    public Mono<ParticipantViewModel> addMessageToParticipant(MessageViewModel message) {
+        var query = new Query(Criteria.where("aggregateId").is(message.getParticipantId()));
+        Update update = new Update();
+        return template.findOne(query, ParticipantViewModel.class)
+                .flatMap(participantViewModel -> {
+                    List<MessageViewModel> messages = participantViewModel.getMessages();
+                    messages.add(message);
+                    update.set("messages", messages);
+                    return template.findAndModify(query, update, ParticipantViewModel.class);
                 });
     }
 
