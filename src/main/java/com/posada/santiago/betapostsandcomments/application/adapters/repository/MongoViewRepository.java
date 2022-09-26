@@ -11,7 +11,6 @@ import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
-import org.springframework.data.mongodb.core.query.UpdateDefinition;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -103,6 +102,18 @@ public class MongoViewRepository implements DomainViewRepository {
                     var newRelevantVote = Integer.parseInt(currentvoteRelevant) + Integer.parseInt(relevanteVote);
                     update.set("relevanceVote", newRelevantVote);
                     return template.findAndModify(query, update, PostViewModel.class);
+                });
+    }
+    @Override
+    public Mono<ParticipantViewModel> AddFavorite(String postId, String participantId) {
+        var query = new Query(Criteria.where("aggregateId").is(participantId));
+        Update update = new Update();
+        return template.findOne(query, ParticipantViewModel.class)
+                .flatMap(participantViewModel -> {
+                    var listaFavoritos = participantViewModel.getFavoritesId();
+                    listaFavoritos.add(postId);
+                    update.set("favoritesId", listaFavoritos);
+                    return template.findAndModify(query, update, ParticipantViewModel.class);
                 });
     }
 
