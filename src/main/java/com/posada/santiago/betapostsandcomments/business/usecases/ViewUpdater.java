@@ -4,12 +4,14 @@ import com.posada.santiago.betapostsandcomments.business.gateways.DomainViewRepo
 import com.posada.santiago.betapostsandcomments.business.gateways.EventBus;
 import com.posada.santiago.betapostsandcomments.business.gateways.model.CommentViewModel;
 import com.posada.santiago.betapostsandcomments.business.gateways.model.EventViewModel;
+import com.posada.santiago.betapostsandcomments.business.gateways.model.MessageViewModel;
 import com.posada.santiago.betapostsandcomments.business.gateways.model.ParticipantViewModel;
 import com.posada.santiago.betapostsandcomments.business.gateways.model.PostReactionDTO;
 import com.posada.santiago.betapostsandcomments.business.gateways.model.PostViewModel;
 import com.posada.santiago.betapostsandcomments.business.gateways.model.PostVoteModel;
 import com.posada.santiago.betapostsandcomments.business.generic.DomainUpdater;
 import com.posada.santiago.betapostsandcomments.domain.participant.events.EventCasted;
+import com.posada.santiago.betapostsandcomments.domain.participant.events.MessageReceived;
 import com.posada.santiago.betapostsandcomments.domain.participant.events.FavAdded;
 import com.posada.santiago.betapostsandcomments.domain.participant.events.ParticipantCreated;
 import com.posada.santiago.betapostsandcomments.domain.post.events.CommentAdded;
@@ -108,8 +110,18 @@ public class ViewUpdater extends DomainUpdater {
         });
         listen((RelevanceVoteAdded event) -> {
             repository.updateRelevanceVote(event.getRelevanceVote(), event.aggregateRootId()).subscribe();
-            var postWithNewVote = new PostVoteModel(event.aggregateRootId(),event.getRelevanceVote());
+            var postWithNewVote = new PostVoteModel(event.aggregateRootId(), event.getRelevanceVote());
             bus.publishGeneric(postWithNewVote, "routingKey.proxy.post.relevantvote.updated");
+        });
+        listen((MessageReceived event) -> {
+            MessageViewModel messageToSend = new MessageViewModel(
+                    event.getMessageId(),
+                    event.aggregateRootId(),
+                    event.getName(),
+                    event.getContent()
+            );
+            repository.addMessageToParticipant(messageToSend).subscribe();
+
         });
         listen((FavAdded event) -> {
             repository.AddFavorite(event.getPostId(), event.aggregateRootId()).subscribe();

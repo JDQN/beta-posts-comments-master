@@ -2,6 +2,7 @@ package com.posada.santiago.betapostsandcomments.business.gateways;
 
 import com.posada.santiago.betapostsandcomments.business.gateways.model.CommentViewModel;
 import com.posada.santiago.betapostsandcomments.business.gateways.model.EventViewModel;
+import com.posada.santiago.betapostsandcomments.business.gateways.model.MessageViewModel;
 import com.posada.santiago.betapostsandcomments.business.gateways.model.ParticipantViewModel;
 import com.posada.santiago.betapostsandcomments.business.gateways.model.PostViewModel;
 import reactor.core.publisher.Flux;
@@ -24,7 +25,10 @@ public interface DomainViewRepository {
 
     Mono<PostViewModel> addCommentToPost(CommentViewModel comment);
 
+    Mono<ParticipantViewModel> addMessageToParticipant(MessageViewModel message);
+
     Mono<ParticipantViewModel> AddFavorite(String postId, String participantId);
+
 
     Mono<ParticipantViewModel> addEventToParticipant(EventViewModel eventViewModel);
 
