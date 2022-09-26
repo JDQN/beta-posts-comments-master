@@ -10,6 +10,7 @@ import com.posada.santiago.betapostsandcomments.business.gateways.model.PostView
 import com.posada.santiago.betapostsandcomments.business.gateways.model.PostVoteModel;
 import com.posada.santiago.betapostsandcomments.business.generic.DomainUpdater;
 import com.posada.santiago.betapostsandcomments.domain.participant.events.EventCasted;
+import com.posada.santiago.betapostsandcomments.domain.participant.events.FavAdded;
 import com.posada.santiago.betapostsandcomments.domain.participant.events.ParticipantCreated;
 import com.posada.santiago.betapostsandcomments.domain.post.events.CommentAdded;
 import com.posada.santiago.betapostsandcomments.domain.post.events.PostCreated;
@@ -109,6 +110,9 @@ public class ViewUpdater extends DomainUpdater {
             repository.updateRelevanceVote(event.getRelevanceVote(), event.aggregateRootId()).subscribe();
             var postWithNewVote = new PostVoteModel(event.aggregateRootId(),event.getRelevanceVote());
             bus.publishGeneric(postWithNewVote, "routingKey.proxy.post.relevantvote.updated");
+        });
+        listen((FavAdded event) -> {
+            repository.AddFavorite(event.getPostId(), event.aggregateRootId()).subscribe();
         });
     }
 }
