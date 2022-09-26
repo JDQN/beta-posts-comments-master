@@ -7,16 +7,15 @@ import com.posada.santiago.betapostsandcomments.business.gateways.model.EventVie
 import com.posada.santiago.betapostsandcomments.business.gateways.model.ParticipantViewModel;
 import com.posada.santiago.betapostsandcomments.business.gateways.model.PostReactionDTO;
 import com.posada.santiago.betapostsandcomments.business.gateways.model.PostViewModel;
+import com.posada.santiago.betapostsandcomments.business.gateways.model.PostVoteModel;
 import com.posada.santiago.betapostsandcomments.business.generic.DomainUpdater;
 import com.posada.santiago.betapostsandcomments.domain.participant.events.EventCasted;
 import com.posada.santiago.betapostsandcomments.domain.participant.events.ParticipantCreated;
-import com.posada.santiago.betapostsandcomments.domain.participant.values.Detail;
-import com.posada.santiago.betapostsandcomments.domain.participant.values.Element;
-import com.posada.santiago.betapostsandcomments.domain.participant.values.TypeOfEvent;
 import com.posada.santiago.betapostsandcomments.domain.post.events.CommentAdded;
 import com.posada.santiago.betapostsandcomments.domain.post.events.PostCreated;
 import com.posada.santiago.betapostsandcomments.domain.post.events.PostDeleted;
 import com.posada.santiago.betapostsandcomments.domain.post.events.ReactionAdded;
+import com.posada.santiago.betapostsandcomments.domain.post.events.RelevanceVoteAdded;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -105,6 +104,11 @@ public class ViewUpdater extends DomainUpdater {
             repository.addReactions(event.getReaction(), event.aggregateRootId()).subscribe();
             var postReaction = new PostReactionDTO(event.aggregateRootId(), event.getReaction());
             bus.publishGeneric(postReaction, "routingKey.proxy.post.reaction.added");
+        });
+        listen((RelevanceVoteAdded event) -> {
+            repository.updateRelevanceVote(event.getRelevanceVote(), event.aggregateRootId()).subscribe();
+            var postWithNewVote = new PostVoteModel(event.aggregateRootId(),event.getRelevanceVote());
+            bus.publishGeneric(postWithNewVote, "routingKey.proxy.post.relevantvote.updated");
         });
     }
 }

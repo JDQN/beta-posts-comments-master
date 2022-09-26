@@ -3,8 +3,7 @@ package com.posada.santiago.betapostsandcomments.business.gateways.model;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public class PostReactionDTO {
+public class PostVoteModel {
     private String postId;
-    private String reaction;
-
+    private String relevantVote;
 }

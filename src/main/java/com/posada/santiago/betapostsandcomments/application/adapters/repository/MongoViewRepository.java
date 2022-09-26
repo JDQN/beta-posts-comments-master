@@ -89,6 +89,19 @@ public class MongoViewRepository implements DomainViewRepository {
     }
 
     @Override
+    public Mono<PostViewModel> updateRelevanceVote(String relevanteVote, String postId) {
+        var query = new Query(Criteria.where("aggregateId").is(postId));
+        Update update = new Update();
+        return template.findOne(query, PostViewModel.class)
+                .flatMap(postViewModel -> {
+                    String currentvoteRelevant = postViewModel.getRelevanceVote();
+                    var newRelevantVote = Integer.parseInt(currentvoteRelevant) + Integer.parseInt(relevanteVote);
+                    update.set("relevanceVote", newRelevantVote);
+                    return template.findAndModify(query, update, PostViewModel.class);
+                });
+    }
+
+    @Override
     public Mono<ParticipantViewModel> addEventToParticipant(EventViewModel eventViewModel) {
         var query = new Query(Criteria.where("aggregateId").is(eventViewModel.getParticipantId()));
         Update update = new Update();
