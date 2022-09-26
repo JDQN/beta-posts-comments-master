@@ -46,6 +46,11 @@ public class MongoViewRepository implements DomainViewRepository {
     }
 
     @Override
+    public Flux<ParticipantViewModel> findAllParticipants() {
+        return template.findAll(ParticipantViewModel.class);
+    }
+
+    @Override
     public Mono<PostViewModel> saveNewPost(PostViewModel post) {
         return template.save(post);
     }

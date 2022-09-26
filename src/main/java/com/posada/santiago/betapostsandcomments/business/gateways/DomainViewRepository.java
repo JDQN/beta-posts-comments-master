@@ -14,6 +14,8 @@ public interface DomainViewRepository {
 
     Flux<PostViewModel> findAllPosts();
 
+    Flux<ParticipantViewModel> findAllParticipants();
+
     Mono<PostViewModel> saveNewPost(PostViewModel post);
 
     Mono<PostViewModel> deletePost(String postId);
