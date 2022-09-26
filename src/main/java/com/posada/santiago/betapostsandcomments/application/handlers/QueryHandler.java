@@ -3,6 +3,7 @@ package com.posada.santiago.betapostsandcomments.application.handlers;
 
 import com.posada.santiago.betapostsandcomments.business.gateways.model.ParticipantViewModel;
 import com.posada.santiago.betapostsandcomments.business.gateways.model.PostViewModel;
+import com.posada.santiago.betapostsandcomments.business.usecases.BringAllParticipant;
 import com.posada.santiago.betapostsandcomments.business.usecases.BringAllPostsUseCase;
 import com.posada.santiago.betapostsandcomments.business.usecases.BringParticipantById;
 import com.posada.santiago.betapostsandcomments.business.usecases.BringPostById;
@@ -25,6 +26,15 @@ public class QueryHandler {
                 request -> ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(BodyInserters.fromPublisher(useCase.get(), PostViewModel.class))
+        );
+    }
+
+    @Bean
+    public RouterFunction<ServerResponse> bringAllParticipants(BringAllParticipant useCase) {
+        return route(GET("/bring/all/participants"),
+                request -> ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(BodyInserters.fromPublisher(useCase.get(), ParticipantViewModel.class))
         );
     }
 
