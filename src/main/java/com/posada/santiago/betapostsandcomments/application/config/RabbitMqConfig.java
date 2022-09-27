@@ -25,8 +25,7 @@ public class RabbitMqConfig {
     public static final String PROXY_QUEUE_POST_RELEVANTVOTE_UPDATED = "events.proxy.post.relevantvote.updated";
 
 
-		public static final String PROXY_QUEUE_POST_COMMENT_DELETED = "events.proxy.post.comment.deleted";
-
+    public static final String PROXY_QUEUE_POST_COMMENT_DELETED = "events.proxy.post.comment.deleted";
 
 
     public static final String GENERAL_QUEUE = "events.general";
@@ -39,34 +38,40 @@ public class RabbitMqConfig {
 
     public static final String PROXY_ROUTING_KEY_POST_RELEVANTVOTE_UPDATED = "routingKey.proxy.post.relevantvote.updated";
 
-		public static final String PROXY_ROUTING_KEY_COMMENT_DELETED = "routingKey.proxy.comment.deleted";
-
+    public static final String PROXY_ROUTING_KEY_COMMENT_DELETED = "routingKey.proxy.comment.deleted";
 
 
     @Autowired
     private QueueHandler handler;
 
     @Bean
-    public Queue postCreatedQueue(){
+    public Queue postCreatedQueue() {
         return new Queue(PROXY_QUEUE_POST_CREATED);
     }
 
     @Bean
-    public Queue commentAddedQueue(){
+    public Queue commentAddedQueue() {
         return new Queue(PROXY_QUEUE_COMMENT_ADDED);
     }
 
     @Bean
-    public Queue postDeletedQueue(){ return new Queue(PROXY_QUEUE_POST_DELETED);}
+    public Queue postDeletedQueue() {
+        return new Queue(PROXY_QUEUE_POST_DELETED);
+    }
 
     @Bean
-    public Queue postReactionAddedQueue(){
+    public Queue postReactionAddedQueue() {
         return new Queue(PROXY_QUEUE_POST_REACTION_ADDED);
     }
 
     @Bean
-    public Queue postRelevantVoteUpdatedQueue(){
+    public Queue postRelevantVoteUpdatedQueue() {
         return new Queue(PROXY_QUEUE_POST_RELEVANTVOTE_UPDATED);
+    }
+
+    @Bean
+    public Queue commentDeletedQueue() {
+        return new Queue(PROXY_QUEUE_POST_COMMENT_DELETED);
     }
 
     @Bean
@@ -74,9 +79,10 @@ public class RabbitMqConfig {
         return new TopicExchange(EXCHANGE);
     }
 
+
     @Bean
     public Binding BindingToPostCreatedQueue() {
-        return BindingBuilder.bind(postCreatedQueue()).to(getTopicExchange()).with(PROXY_ROUTING_KEY_COMMENT_DELETED);
+        return BindingBuilder.bind(postCreatedQueue()).to(getTopicExchange()).with(PROXY_ROUTING_KEY_POST_CREATED);
     }
 
     @Bean
@@ -85,36 +91,36 @@ public class RabbitMqConfig {
     }
 
     @Bean
-    public Binding BindingToPostDeletedQueue(){
+    public Binding BindingToPostDeletedQueue() {
         return BindingBuilder.bind(postDeletedQueue()).to(getTopicExchange()).with(PROXY_ROUTING_KEY_POST_DELETED);
     }
 
     @Bean
-    public Binding BindingToPostReactionAdded(){
+    public Binding BindingToPostReactionAdded() {
         return BindingBuilder.bind(postReactionAddedQueue()).to(getTopicExchange()).with(PROXY_ROUTING_KEY_POST_REACTION_ADDED);
 
     }
+
     @Bean
-    public Binding BindingToPostRelecvantVoteUpdated(){
+    public Binding BindingToPostRelevantVoteUpdated() {
         return BindingBuilder.bind(postRelevantVoteUpdatedQueue()).to(getTopicExchange()).with(PROXY_ROUTING_KEY_POST_RELEVANTVOTE_UPDATED);
 
     }
 
+    @Bean
+    public Binding BindingCommentToDeleted() {
+        return BindingBuilder.bind(commentDeletedQueue()).to(getTopicExchange()).with(PROXY_ROUTING_KEY_COMMENT_DELETED);
+
+    }
+
     @RabbitListener(queues = GENERAL_QUEUE)
-    public void listenToGeneralQueue(String received){
+    public void listenToGeneralQueue(String received) {
         handler.accept(received);
     }
 
 
-	@Bean
-	public Queue commentDeletedQueue(){
-			return new Queue(PROXY_QUEUE_POST_COMMENT_DELETED);
-		}
 
-	@Bean
-	public Binding BidenCommentToDeleted(){
-		return BindingBuilder.bind(commentDeletedQueue()).to(getTopicExchange()).with(PROXY_ROUTING_KEY_COMMENT_DELETED);
 
-	}
+
 
 }
