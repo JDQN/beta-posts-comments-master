@@ -111,24 +111,42 @@ public class MongoViewRepository implements DomainViewRepository {
         var query = new Query(Criteria.where("aggregateId").is(postId));
         Update update = new Update();
         return template.findOne(query, PostViewModel.class)
-                .flatMap(postViewModel -> {
-                    String currentvoteRelevant = postViewModel.getRelevanceVote();
-                    var newRelevantVote = Integer.parseInt(currentvoteRelevant) + Integer.parseInt(relevanteVote);
-                    update.set("relevanceVote", newRelevantVote);
-                    return template.findAndModify(query, update, PostViewModel.class);
-                });
+						.flatMap(postViewModel -> {
+								String currentvoteRelevant = postViewModel.getRelevanceVote();
+								var newRelevantVote = Integer.parseInt(currentvoteRelevant) + Integer.parseInt(relevanteVote);
+								update.set("relevanceVote", newRelevantVote);
+								return template.findAndModify(query, update, PostViewModel.class);
+						});
     }
-    @Override
+
+
+	@Override
+	public Mono<PostViewModel> deleteCommenPost(String commentId, String postId ) {
+			System.out.println("deleteCommenPost");
+			var query = new Query(Criteria.where("aggregateId").is(postId));
+			Update update = new Update();
+			return template.findOne(query, PostViewModel.class)
+				 .flatMap(postViewModel -> {
+					 System.out.println("deleteCommenPost-123");
+					 List<CommentViewModel> comments = postViewModel.getComments();
+					 comments.removeIf(comment -> comment.getId().equals(commentId));
+					 update.set("comments", comments);
+					 return template.findAndModify(query, update, PostViewModel.class);
+				 });
+	}
+
+
+	@Override
     public Mono<ParticipantViewModel> AddFavorite(String postId, String participantId) {
         var query = new Query(Criteria.where("aggregateId").is(participantId));
         Update update = new Update();
         return template.findOne(query, ParticipantViewModel.class)
-                .flatMap(participantViewModel -> {
-                    var listaFavoritos = participantViewModel.getFavoritesId();
-                    listaFavoritos.add(postId);
-                    update.set("favoritesId", listaFavoritos);
-                    return template.findAndModify(query, update, ParticipantViewModel.class);
-                });
+						.flatMap(participantViewModel -> {
+								var listaFavoritos = participantViewModel.getFavoritesId();
+								listaFavoritos.add(postId);
+								update.set("favoritesId", listaFavoritos);
+								return template.findAndModify(query, update, ParticipantViewModel.class);
+						});
     }
 
     @Override
@@ -136,12 +154,12 @@ public class MongoViewRepository implements DomainViewRepository {
         var query = new Query(Criteria.where("aggregateId").is(eventViewModel.getParticipantId()));
         Update update = new Update();
         return template.findOne(query, ParticipantViewModel.class)
-                .flatMap(participantViewModel -> {
-                    List<EventViewModel> events = participantViewModel.getEvents();
-                    events.add(eventViewModel);
-                    update.set("events", events);
-                    return template.findAndModify(query, update, ParticipantViewModel.class);
-                });
+						.flatMap(participantViewModel -> {
+								List<EventViewModel> events = participantViewModel.getEvents();
+								events.add(eventViewModel);
+								update.set("events", events);
+								return template.findAndModify(query, update, ParticipantViewModel.class);
+						});
     }
 
 }
