@@ -29,9 +29,7 @@ public class PostViewModel {
 	private List<CommentViewModel> comments;
 	private List<String> reactions;
 
-	private LocalDateTime creationDate;
 
-	private String dateFormated;
 
 
 
@@ -39,7 +37,7 @@ public class PostViewModel {
         this.comments = new ArrayList<>();
     }
 
-	public PostViewModel(String aggregateId, String author, String title, String photoUrl, String relevanceVote, String participantId, Boolean deleted, List<CommentViewModel> comments, List<String> reactions,LocalDateTime fecha,String dateFormated) {
+	public PostViewModel(String aggregateId, String author, String title, String photoUrl, String relevanceVote, String participantId, Boolean deleted, List<CommentViewModel> comments, List<String> reactions) {
 		this.aggregateId = aggregateId;
 		this.author = author;
 		this.title = title;
@@ -49,7 +47,6 @@ public class PostViewModel {
 		this.deleted = deleted;
 		this.comments = comments;
 		this.reactions = reactions;
-		this.creationDate = fecha;
-		this.dateFormated = dateFormated;
+
 	}
 }

@@ -33,10 +33,9 @@ public class ViewUpdater extends DomainUpdater {
                     "0",
                     event.getParticipantId(),
                     false,
-                    new ArrayList<>(), new ArrayList<>(),
-                    LocalDateTime.now(),
-                    ""
+                    new ArrayList<>(), new ArrayList<>()
             );
+
             bus.publishGeneric(post, "routingKey.proxy.post.created");
             EventViewModel eventViewModel = new EventViewModel(
                     String.valueOf(Math.random()),
