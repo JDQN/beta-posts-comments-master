@@ -20,7 +20,6 @@ import com.posada.santiago.betapostsandcomments.domain.post.events.PostDeleted;
 import com.posada.santiago.betapostsandcomments.domain.post.events.ReactionAdded;
 import com.posada.santiago.betapostsandcomments.domain.post.events.RelevanceVoteAdded;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -43,7 +42,9 @@ public class ViewUpdater extends DomainUpdater {
                     "0",
                     event.getParticipantId(),
                     false,
-                    new ArrayList<>(), new ArrayList<>()
+                    new ArrayList<>(), new ArrayList<>(),
+                    LocalDateTime.now(),
+                    ""
             );
             bus.publishGeneric(post, "routingKey.proxy.post.created");
             EventViewModel eventViewModel = new EventViewModel(
