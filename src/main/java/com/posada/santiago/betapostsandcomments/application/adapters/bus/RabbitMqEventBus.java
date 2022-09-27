@@ -44,6 +44,11 @@ public class RabbitMqEventBus implements EventBus {
                     RabbitMqConfig.EXCHANGE, RabbitMqConfig.PROXY_ROUTING_KEY_POST_REACTION_ADDED, notification.serialize().getBytes()
             );
         }
+				if(notification.getType().contains("CommentDeleted")){
+					rabbitTemplate.convertAndSend(
+						 RabbitMqConfig.EXCHANGE, RabbitMqConfig.PROXY_ROUTING_KEY_COMMENT_DELETED, notification.serialize().getBytes()
+					);
+				}
 
     }
 

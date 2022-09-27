@@ -2,23 +2,14 @@ package com.posada.santiago.betapostsandcomments.business.usecases;
 
 import com.posada.santiago.betapostsandcomments.business.gateways.DomainViewRepository;
 import com.posada.santiago.betapostsandcomments.business.gateways.EventBus;
-import com.posada.santiago.betapostsandcomments.business.gateways.model.CommentViewModel;
-import com.posada.santiago.betapostsandcomments.business.gateways.model.EventViewModel;
-import com.posada.santiago.betapostsandcomments.business.gateways.model.MessageViewModel;
-import com.posada.santiago.betapostsandcomments.business.gateways.model.ParticipantViewModel;
-import com.posada.santiago.betapostsandcomments.business.gateways.model.PostReactionDTO;
-import com.posada.santiago.betapostsandcomments.business.gateways.model.PostViewModel;
-import com.posada.santiago.betapostsandcomments.business.gateways.model.PostVoteModel;
+import com.posada.santiago.betapostsandcomments.business.gateways.model.*;
 import com.posada.santiago.betapostsandcomments.business.generic.DomainUpdater;
+import com.posada.santiago.betapostsandcomments.domain.commons.values.PostId;
 import com.posada.santiago.betapostsandcomments.domain.participant.events.EventCasted;
 import com.posada.santiago.betapostsandcomments.domain.participant.events.MessageReceived;
 import com.posada.santiago.betapostsandcomments.domain.participant.events.FavAdded;
 import com.posada.santiago.betapostsandcomments.domain.participant.events.ParticipantCreated;
-import com.posada.santiago.betapostsandcomments.domain.post.events.CommentAdded;
-import com.posada.santiago.betapostsandcomments.domain.post.events.PostCreated;
-import com.posada.santiago.betapostsandcomments.domain.post.events.PostDeleted;
-import com.posada.santiago.betapostsandcomments.domain.post.events.ReactionAdded;
-import com.posada.santiago.betapostsandcomments.domain.post.events.RelevanceVoteAdded;
+import com.posada.santiago.betapostsandcomments.domain.post.events.*;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -57,6 +48,8 @@ public class ViewUpdater extends DomainUpdater {
             repository.addEventToParticipant(eventViewModel).subscribe();
             repository.saveNewPost(post).subscribe();
         });
+
+
         listen((ParticipantCreated event) -> {
             ParticipantViewModel participant = new ParticipantViewModel(
                     event.aggregateRootId(),
@@ -126,5 +119,13 @@ public class ViewUpdater extends DomainUpdater {
         listen((FavAdded event) -> {
             repository.AddFavorite(event.getPostId(), event.aggregateRootId()).subscribe();
         });
+
+				listen((CommentDeleted event) ->{
+					var postId = event.getCommentId();
+					repository.deleteCommenPost(event.getCommentId(), event.aggregateRootId()).subscribe();
+					var commentDeleteModel = new CommentDeleteModel(event.aggregateRootId(), event.getCommentId());
+					bus.publishGeneric(commentDeleteModel,"routingKey.proxy.comment.deleted");
+				});
+
     }
 }

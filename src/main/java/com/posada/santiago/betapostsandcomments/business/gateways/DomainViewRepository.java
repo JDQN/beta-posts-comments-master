@@ -35,4 +35,6 @@ public interface DomainViewRepository {
     Mono<PostViewModel> addReactions(String reaction, String postId);
 
     Mono<PostViewModel> updateRelevanceVote(String relevanteVote, String postId);
+
+	 Mono <PostViewModel> deleteCommenPost(String commentId, String postId);
 }
