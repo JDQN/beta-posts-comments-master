@@ -1,13 +1,9 @@
 package com.posada.santiago.betapostsandcomments.business.gateways.model;
 
-import com.posada.santiago.betapostsandcomments.domain.commons.values.Name;
-import com.posada.santiago.betapostsandcomments.domain.commons.values.ParticipantId;
-import com.posada.santiago.betapostsandcomments.domain.commons.values.PhotoUrl;
-import com.posada.santiago.betapostsandcomments.domain.post.values.Reaction;
-import com.posada.santiago.betapostsandcomments.domain.post.values.RelevanceVote;
 import lombok.Getter;
 import lombok.Setter;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +25,7 @@ public class PostViewModel {
 	private List<CommentViewModel> comments;
 	private List<String> reactions;
 
+	private String creationDate;
 
 
 
@@ -37,7 +34,7 @@ public class PostViewModel {
         this.comments = new ArrayList<>();
     }
 
-	public PostViewModel(String aggregateId, String author, String title, String photoUrl, String relevanceVote, String participantId, Boolean deleted, List<CommentViewModel> comments, List<String> reactions) {
+	public PostViewModel(String aggregateId, String author, String title, String photoUrl, String relevanceVote, String participantId, Boolean deleted, List<CommentViewModel> comments, List<String> reactions, LocalDateTime creationDate) {
 		this.aggregateId = aggregateId;
 		this.author = author;
 		this.title = title;
@@ -47,6 +44,13 @@ public class PostViewModel {
 		this.deleted = deleted;
 		this.comments = comments;
 		this.reactions = reactions;
+		this.creationDate = this.formatDate(creationDate);
 
+	}
+
+	private String formatDate(LocalDateTime creationDate){
+		DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+		String formattedDateTime = creationDate.format(formatter);
+		return formattedDateTime;
 	}
 }
