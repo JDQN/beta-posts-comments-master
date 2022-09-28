@@ -5,9 +5,11 @@ import co.com.sofka.domain.generic.DomainEvent;
 import com.google.gson.Gson;
 import com.posada.santiago.betapostsandcomments.application.config.RabbitMqConfig;
 import com.posada.santiago.betapostsandcomments.business.gateways.EventBus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class RabbitMqEventBus implements EventBus {
     private final RabbitTemplate rabbitTemplate;
@@ -54,6 +56,7 @@ public class RabbitMqEventBus implements EventBus {
 
     @Override
     public void publishGeneric(Object object, String routingKey) {
+        log.info("Message sended from beta: "+ object);
         rabbitTemplate.convertAndSend(
                 RabbitMqConfig.EXCHANGE, routingKey, gson.toJson(object).getBytes()
         );

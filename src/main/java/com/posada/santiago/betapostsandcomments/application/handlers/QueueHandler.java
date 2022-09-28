@@ -28,7 +28,7 @@ public class QueueHandler implements Consumer<String> {
         try {
             DomainEvent event = (DomainEvent) gson.fromJson(notification.getBody(), Class.forName(type));
             useCase.accept(event);
-            log.info("Event accepted");
+            log.info("Event accepted: "+type );
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
